@@ -1,0 +1,37 @@
+Which component talks to whihc component
+components: PC, IR, PSR, MAR, MEM, RF1, RF2, ALU, OUT
+> all are 16-Bit other than PSR, ALU and, OUT; which are 4-Bit
+> getting data from RF1, RF2 means IR decidec whihch regiser is RF1, RF2, not listed below
+> ALU and out means setting whihc register is the output register of ALU, segmetn out
+
+notation: A -> B: A sets value of B but B doesnt A
+
+graph:
+
+PC  -> MAR
+
+IR  -> ALU
+IR  -> OUT
+IR  -> PSR
+
+PSR -> RF1
+PSR -> RF2
+
+MAR -> RF1
+MAR -> RF2
+
+MEM -> PC 
+MEM -> IR
+MEM -> MAR
+MEM -> RF1
+MEM -> RF2
+
+RF1 -> PC 
+RF1 -> PSR
+RF1 -> MAR
+RF1 -> MEM
+
+RF2 -> PC 
+RF2 -> PSR
+RF2 -> MAR
+RF2 -> MEM
