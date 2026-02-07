@@ -59,7 +59,7 @@ Components List:
 	- Control Unit
 
 # TODO
-Micro Instructions: "21 (MAX 24)": # NEED TO BE REIMPLEMENTED
+Micro Instructions: "21 (MAX 24)": # NEED TO BE REIMPLEMENTED / UPDATED
 	- Basics:
 		- HALT: "Halt The Clock"
 		- REST: "Reset Everything Other Than RAM and Storage"
