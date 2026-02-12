@@ -1,8 +1,8 @@
 package in.hridaykh.hk8sim.isacompiler.model;
 
 public class Instruction {
-	byte opcode;
-	byte arg1;
-	byte arg2;
-	short nextWord;
+	public Byte opcode;
+	public Byte arg1;
+	public Byte arg2;
+	public Short nextWord;
 }

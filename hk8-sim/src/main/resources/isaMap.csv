@@ -1,4 +1,3 @@
-opcode,name,args,nextWord
 0,LDI,1,yes
 1,LDR,2,no
 2,STI,1,yes

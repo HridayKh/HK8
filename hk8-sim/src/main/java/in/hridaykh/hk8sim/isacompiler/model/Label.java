@@ -1,9 +1,10 @@
 package in.hridaykh.hk8sim.isacompiler.model;
 
+import java.util.List;
+
 public class Label {
-	Instruction[] instructions;
-	short sizeInWords;
-	short givenSizeInWords;
-	short address;
-	String name;
+	public List<Instruction> instructions;
+	public short sizeInWords;
+	public short address;
+	public String name;
 }

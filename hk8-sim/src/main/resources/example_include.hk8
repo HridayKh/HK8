@@ -1,4 +1,4 @@
 end:				; --- Finish ---
-	STI	R2, $outPath	; Store final result in memory
+	STI	R2 $outPath	; Store final result in memory
 	SEG	R2		; Display result on 7-segment display
 	HALT			; Stop execution
