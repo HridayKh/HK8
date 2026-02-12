@@ -7,12 +7,13 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import in.hridaykh.hk8sim.isacompiler.model.Instruction;
+import in.hridaykh.hk8sim.isacompiler.model.Label;
 
 public class IsaCompiler {
 
@@ -36,10 +37,13 @@ public class IsaCompiler {
 		List<String> allLines = Files.readAllLines(Paths.get(inputFile));
 		List<String> linesAfterIncludes = Includes.processIncludes(allLines);
 		List<String> linesAfterDefines = Defines.processDefines(linesAfterIncludes);
-		List<String> linesAfterLabels = Labels.processLabels(linesAfterDefines);
+		List<Label> labelsAfterPass1 = LabelsPass1.processLabelsPass1(linesAfterDefines);
+		String[] afterPass2 = LabelsPass2.processPass2(labelsAfterPass1);
 
-		for (String line : linesAfterDefines)
-			System.out.println(line);
+		String outData = "";
+		for (int i = 0; i < afterPass2.length; i++)
+			outData += String.format("%04X: %s\n", i, afterPass2[i]);
+		Files.writeString(Paths.get(outputFile), outData);
 	}
 
 	private void createInstructionMap() {

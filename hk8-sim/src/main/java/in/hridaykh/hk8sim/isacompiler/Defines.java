@@ -64,7 +64,7 @@ public class Defines {
 			if (varValue == null)
 				throw new IllegalArgumentException("unknown var: " + varName);
 
-			newLine += varValue + (varNameArr.length > 1 ? varNameArr[1] : "");
+			newLine += varValue + (varNameArr.length > 1 ? varNameArr[1] : "") + " ";
 		}
 		return newLine;
 	}
