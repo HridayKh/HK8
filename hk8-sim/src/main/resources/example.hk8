@@ -1,0 +1,42 @@
+; number representation: 
+;	hex: 0xAb
+; 	decimal: 1234
+;	binary: .0010
+
+; define variables like this
+#define outpath 100		; use them like `$outPath`
+#define aR r0			; define first operation
+#define a 7			; define first operation
+#define bR r1			; define second operation
+#define b 10			; define second operation
+
+; execution starts at whatever label is adress 0
+; need to be in adress order
+; syntax: address name:
+; note: indentation in line is optional but instruciton seprator is new line
+; represent label's address using :labelName
+; other than the main address 0 label, optional to include teh address
+; labels are case insensitive, i reccomend camelCase
+
+0 main:				; --- Setup ---
+	LDI	R15, 0		; Clean up default 7-segment display from garbage to 0
+	LDI	$aR, $a		; Multiplier = 7
+	LDI	$bR, $b		; Multiplicand = 10
+	LDI	R2, 0		; Result Accumulator = 0
+	ALU	R2		; Set ALU Output to R2
+
+10 loop:				; --- Main Loop ---
+	CMP	R0, 0		; Check if multiplier is 0
+	JZI	:end		; If zero, we are done
+
+	ADD	R2, R1		; R2 (ALU_OUT) = R2 + R1
+
+	ALU	R0		; Switch ALU output to R0 to decrement it
+	DEC	R0		; R0 = R0 - 1
+
+	ALU	R2		; Switch ALU output back to R2 for the next addition
+	JMPI	:loop		; Repeat
+
+; include files, this line will be replaces by the contents of other files
+; it will keep looping until are includes are resolved
+#include /home/hridaykh/Code/experiments/HK8/hk8-sim/src/main/resources/example_include.hk8

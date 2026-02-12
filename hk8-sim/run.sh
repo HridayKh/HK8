@@ -1,0 +1,1 @@
+mvn -q clean compile exec:java -e -Dexec.args="/home/hridaykh/Code/experiments/HK8/hk8-sim/src/main/resources/example.hk8"
