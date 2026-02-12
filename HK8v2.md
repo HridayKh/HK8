@@ -49,8 +49,8 @@
 
 - 4 Bits port address
 - 16 Ports
-- Port 0 adress 0 is start point and if can go over to the next port if not halted called port spill
-- Port 0 is the program storage by default and determines memory port (start from the end due to port spill)
+- Port 0 adress 0 is start point
+- Port 0 is the program storage by default and determines memory port
 - instruciton to select port
 - instrcution to manage port
 - port select register (psr) treater like a smaller mar
