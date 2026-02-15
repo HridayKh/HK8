@@ -19,14 +19,14 @@
 ; labels are case insensitive, i reccomend camelCase
 
 0 main:				; --- Setup ---
-	LDI	R15 0		; Clean up default 7-segment display from garbage to 0
-	LDI	$aR $a		; Multiplier = 7
-	LDI	$bR $b		; Multiplicand = 10
-	LDI	R2 0		; Result Accumulator = 0
+	IMM	R15 0		; Clean up default 7-segment display from garbage to 0
+	IMM	$aR $a		; Multiplier = 7
+	IMM	$bR $b		; Multiplicand = 10
+	IMM	R2 0		; Result Accumulator = 0
 	ALU	R2		; Set ALU Output to R2
 
-10 loop:			; --- Main Loop ---
-	CMP	R0 0		; Check if multiplier is 0
+10 loop:			; --- Main Loop ---		TODO BUG WRONG ADDRESS EVEN THO GIVEN
+	CMPI	R0 0		; Check if multiplier is 0
 	JZI	:end		; If zero, we are done
 
 	ADD	R2 R1		; R2 (ALU_OUT) = R2 + R1

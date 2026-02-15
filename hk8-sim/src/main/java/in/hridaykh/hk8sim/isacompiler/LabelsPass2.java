@@ -12,10 +12,22 @@ public class LabelsPass2 {
 	public static String[] processPass2(List<Label> labels) {
 		for (Label label : labels)
 			calculateLabelSize(label);
+
 		determineLabelZero(labels);
-		String[] result = new String[giveLabelAddresses(labels) - 1];
+
+		// minus as giveLabelAddresses returns first empty address for the next label
+		int resultSize = giveLabelAddresses(labels) - 1;
+		String[] result = new String[resultSize];
+
+		// initialize result to all zeros
+		for (int i = 0; i < result.length; i++)
+			result[i] = "0000000000000000"; 
+
 		putLabelAddressesInInstructions(labels);
-		fillResult(result, labels);
+
+		for (Label label : labels) 
+			fillResult(result, label);
+
 		return result;
 	}
 
@@ -100,24 +112,22 @@ public class LabelsPass2 {
 		}
 	}
 
-	private static void fillResult(String[] result, List<Label> labels) {
+	private static void fillResult(String[] result, Label label) {
 		int idx = 0;
-		for (Label label : labels) {
-			for (Instruction ins : label.instructions) {
-				// Use 0 if the argument is null
-				long opVal = (ins.opcode != null) ? ins.opcode : 0;
-				long a1Val = (ins.arg1 != null) ? ins.arg1 : 0;
-				long a2Val = (ins.arg2 != null) ? ins.arg2 : 0;
+		for (Instruction ins : label.instructions) {
+			// Use 0 if the argument is null
+			long opVal = (ins.opcode != null) ? ins.opcode : 0;
+			long a1Val = (ins.arg1 != null) ? ins.arg1 : 0;
+			long a2Val = (ins.arg2 != null) ? ins.arg2 : 0;
 
-				String opcode = toBinary(opVal, 6, 0b00111111);
-				String arg1 = toBinary(a1Val, 4, 0x0F);
-				String arg2 = toBinary(a2Val, 4, 0x0F);
+			String opcode = toBinary(opVal, 6, 0b00111111);
+			String arg1 = toBinary(a1Val, 4, 0x0F);
+			String arg2 = toBinary(a2Val, 4, 0x0F);
+			
+			result[label.address + idx++] = opcode + arg1 + arg2 + "00";
 
-				result[idx++] = opcode + arg1 + arg2 + "00";
-
-				if (ins.nextWord != null) {
-					result[idx++] = toBinary(ins.nextWord, 16, 0xFFFF);
-				}
+			if (ins.nextWord != null) {
+				result[label.address + idx++] = toBinary(ins.nextWord, 16, 0xFFFF);
 			}
 		}
 	}

@@ -14,6 +14,7 @@
 - 06: PORTR - set port from register value
 - 07: PORTS - store current port to register
 - 08: COPY - copy value from one register to another register
+- 09: IMM - set a register to an immideate value
 
 ## ALU (11-30)
 
@@ -31,6 +32,8 @@
 - 22: ORI - or a register and an immideate value and store in output register
 - 23: XOR - xor two registers and store in output register
 - 24: XORI - xor a register and an immideate value and store in output register
+- 25: SHL - shift left a register and store in output register
+- 26: SHR - shift right a register and store in output register
 
 ## Branching (31-50)
 
