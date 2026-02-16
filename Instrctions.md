@@ -18,6 +18,7 @@
 - 10: PERS - store current port execute to register
 - 11: COPY - copy value from one register to another register
 - 12: IMM - set a register to an immideate value
+- 13: PCS - Store program counter value (ie cutrent instruction address) to register
 
 ## ALU (21-40)
 
