@@ -43,5 +43,4 @@
 56,RETI,0,no
 57,EI,0,no
 58,DI,0,no
-61,SEG,1,no
-62,HALT,0,no
+61,HALT,0,no

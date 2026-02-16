@@ -5,7 +5,7 @@
 - Word Size: 16-bit Data / 16-bit Address.
 - General Purpose Registers: 16 registers (R0 through R15).
   - R0​–R14​: General Purpose.
-  - R15: General purpose but also default destination for ALU operations and 7-Segment output (configurable).
+  - R15: General purpose but also default destination for ALU operations (configurable).
 - Address Space: Managed via the `MAR` (`Memory Address Register`) and `PSR` (`Port Select Register`).
 
 ## 2. Instruction Format (16-Bit Word)
@@ -55,7 +55,6 @@ opcode  ||   ||  ||
 ## 6. ALU & Output Logic
 
 - Operations: Primarily focused on `ADD` and `SUB`.
-- Flexible Output: While  is the default, the destination register for ALU results and the 7-Segment display can be dynamically remapped via the `ALU` and `SEG` instructions.
 - Isolation: The ALU has a "Temporary Out" buffer to prevent race conditions during register write-back.
 
 ## 7. Core Component Overview
@@ -85,5 +84,4 @@ opcode  ||   ||  ||
 ### Output & External Interface
 
 - Ports: Interface for Program Storage (Default Port 0) and RAM.
-- 7-Segment Display: Visual output component.
 - Display Output ID Register: Stores which register index's value is currently being piped to the display.

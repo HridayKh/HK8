@@ -1,13 +1,32 @@
 # HK8 Instrctions
 
+> The instructions with more than one 4-Bit input (for register, ports, etc.) have their order defined as `[Arg1, Arg2]`
+
+## Macros
+
+> Macros to define repeated combinations of micro-instructions.
+
+1. **`FETCH`**: `PC.PC_OUT_B1`, `MEM.MEM_ADDR_B1`, `MEM.MEM_OUT_B2`, `IR.IR_IN_B2`
+   > All instructions have implied step 0 as the `FETCH` macro unless specified otherwise.
+2. **`DONE`**: `PC.PC_INC`, `CU.INS_DONE`
+   > All instructions have implied last step as the `DONE` macro unless specified otherwise.
+
 ## No Operation
 
-- 00: NOP - No operation
+- 00: NOP - No operation for 1 cycle.
+  0. `FETCH`, `DONE`
 
 ## Ports, Memory, Registers, and Addressing (1-20)
 
 - 01: LDI - get from memory to register (immideate value for address)
-- 02: LDR - get from memory to register (address from register)
+  1. `PC.PC_INC`, `PC.PC_OUT_B1`, `MEM.MAR_IN_B1`, `MEM.MEM_OUT_B2`, `RF.R1_IN_B2`
+  2. `RF.R1_OUT_B1`, `MEM.MAR_IN_B1`
+  3. `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`
+
+- 02: LDR - [addrReg, destReg] get from memory to register (address from register)
+  1. `RF.R1_OUT_B1`, `MEM.MAR_IN_B1`
+  2. `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`
+
 - 03: STI - store to memory from register (immideate value for address)
 - 04: STR - store to memory from register (address from register)
 - 05: PORTI - set port from immideate value
@@ -62,5 +81,4 @@
 
 ## Other (61-63)
 
-- 61: SEG - immideate value only for which register to output on the 7 segment display
-- 62: HALT - stop the clock
+- 61: HALT - stop the clock

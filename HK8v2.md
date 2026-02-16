@@ -36,7 +36,6 @@
 - reg file + multiplexer register selector
 - ports: program storage, ram
 - alu + alu output register id register + alu temprary out
-- 7 segment display + output register id register
 - flag register
 - control unit + control signals
 - instrucion register
