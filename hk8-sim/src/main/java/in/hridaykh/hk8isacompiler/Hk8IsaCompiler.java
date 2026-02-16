@@ -1,4 +1,4 @@
-package in.hridaykh.hk8sim.isacompiler;
+package in.hridaykh.hk8isacompiler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,18 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import in.hridaykh.hk8sim.isacompiler.model.Instruction;
-import in.hridaykh.hk8sim.isacompiler.model.Label;
+import in.hridaykh.hk8isacompiler.model.Instruction;
+import in.hridaykh.hk8isacompiler.model.Label;
 
-public class IsaCompiler {
+public class Hk8IsaCompiler {
 
 	public final static Map<String, Instruction> INSTRUCTION_MAP = new HashMap<>();
 
-	public IsaCompiler(String[] args) throws IOException {
-		String inputFile = args.length > 0 ? args[0] : null;
-		String outputFile = args.length > 1 ? args[1] : null;
+	public Hk8IsaCompiler(String[] args) throws IOException {
+		String inputFile = args[1]; // Main class ensures atleast 2 args
+		String outputFile = args.length > 1 ? args[2] : null;
 
-		if (inputFile == null || inputFile.isBlank()) {
+		if (inputFile.isBlank()) {
 			System.err.println("Input file is required!");
 			return;
 		}

@@ -1,4 +1,4 @@
-package in.hridaykh.hk8sim.isacompiler;
+package in.hridaykh.hk8isacompiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import in.hridaykh.hk8sim.isacompiler.model.Instruction;
-import in.hridaykh.hk8sim.isacompiler.model.Label;
+import in.hridaykh.hk8isacompiler.model.Instruction;
+import in.hridaykh.hk8isacompiler.model.Label;
 
 public class LabelsPass1 {
 
@@ -61,7 +61,7 @@ public class LabelsPass1 {
 		String[] untrimmedParts = line.trim().split("[^\\w.:]");
 		String[] parts = trimArray(untrimmedParts);
 
-		Instruction insType = IsaCompiler.INSTRUCTION_MAP.get(parts[0].trim().toLowerCase());
+		Instruction insType = Hk8IsaCompiler.INSTRUCTION_MAP.get(parts[0].trim().toLowerCase());
 
 		if (insType == null)
 			throw new IllegalArgumentException("Invalid instruction: " + parts[0] + " in line: " + line);

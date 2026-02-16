@@ -1,4 +1,4 @@
-package in.hridaykh.hk8sim.isacompiler.model;
+package in.hridaykh.hk8isacompiler.model;
 
 public class Instruction {
 	public Byte opcode;

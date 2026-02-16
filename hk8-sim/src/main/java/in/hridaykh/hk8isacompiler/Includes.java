@@ -1,4 +1,4 @@
-package in.hridaykh.hk8sim.isacompiler;
+package in.hridaykh.hk8isacompiler;
 
 import java.io.IOException;
 import java.nio.file.Files;

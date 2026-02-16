@@ -1,4 +1,4 @@
-package in.hridaykh.hk8sim.isacompiler.model;
+package in.hridaykh.hk8isacompiler.model;
 
 import java.util.List;
 
