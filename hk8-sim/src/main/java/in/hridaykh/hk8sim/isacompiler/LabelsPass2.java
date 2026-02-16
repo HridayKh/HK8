@@ -16,17 +16,24 @@ public class LabelsPass2 {
 		determineLabelZero(labels);
 
 		// minus as giveLabelAddresses returns first empty address for the next label
-		int resultSize = giveLabelAddresses(labels) - 1;
+		int resultSize = giveLabelAddresses(labels);
+		System.out.println("Total program size in words: " + resultSize);
+
+		Label lastLabel = labels.get(labels.size() - 1);
+		System.out.println("Last label: " + lastLabel.name + ", address: " + lastLabel.address);
+
 		String[] result = new String[resultSize];
 
 		// initialize result to all zeros
 		for (int i = 0; i < result.length; i++)
-			result[i] = "0000000000000000"; 
+			result[i] = "0000000000000000";
 
-		putLabelAddressesInInstructions(labels);
+		Map<String, Short> labelAddressMap = createLabelAddressMap(labels);
 
-		for (Label label : labels) 
+		for (Label label : labels) {
+			putLabelAddressesInInstructions(label, labelAddressMap);
 			fillResult(result, label);
+		}
 
 		return result;
 	}
@@ -66,50 +73,44 @@ public class LabelsPass2 {
 				first = false;
 				continue;
 			}
-
 			if (label.address != null && label.address == 0)
 				throw new IllegalArgumentException("Label " + label.name
 						+ " has address 0, which is reserved for the first label.");
 
 			int minimumAdress = lastLabelAddress + lastLabelSize;
+
 			if (minimumAdress > 0xFFFF)
-				throw new IllegalArgumentException(
-						"The total size of the labels exceeds the maximum addressable memory of 0xFFFF.");
-			if (label.address != null && label.address >= minimumAdress) {
-				lastLabelAddress = label.address;
-				lastLabelSize = label.sizeInWords;
-			} else {
-				if (label.address != null && label.address < minimumAdress)
-					throw new IllegalArgumentException("Label " + label.name + " has address "
-							+ label.address
-							+ ", which is less than the minimum required address of "
-							+ minimumAdress
-							+ " based on the previous label's address and size.");
-				label.address = (short) minimumAdress;
-				lastLabelAddress = label.address;
-				lastLabelSize = label.sizeInWords;
-			}
+				throw new IllegalArgumentException("Program too big, failed at label: " + label.name);
+
+			if (label.address != null && ((int) label.address) < minimumAdress)
+				throw new IllegalArgumentException(String.format("%s (%d) is less than minimum %d.",
+						label.name, ((int) label.address), minimumAdress));
+
+			label.address = label.address == null ? (short) minimumAdress : label.address;
+			lastLabelAddress = ((int) label.address);
+			lastLabelSize = ((int) label.sizeInWords);
 		}
 		return lastLabelAddress + lastLabelSize;
 	}
 
-	private static void putLabelAddressesInInstructions(List<Label> labels) {
+	private static Map<String, Short> createLabelAddressMap(List<Label> labels) {
 		Map<String, Short> labelAddressMap = new HashMap<>();
 		for (Label label : labels)
 			labelAddressMap.put(label.name.toLowerCase(), label.address);
-		for (Label label : labels) {
-			if (label.instructions == null || label.instructions.isEmpty())
+		return labelAddressMap;
+	}
+
+	private static void putLabelAddressesInInstructions(Label label, Map<String, Short> labelAddressMap) {
+		if (label.instructions == null || label.instructions.isEmpty())
+			return;
+		for (Instruction ins : label.instructions) {
+			if (ins.nextWord != null || ins.labelNameForPass2 == null || ins.labelNameForPass2.isBlank())
 				continue;
-			for (Instruction ins : label.instructions) {
-				if (ins.nextWord != null
-						|| (ins.labelNameForPass2 == null || ins.labelNameForPass2.isBlank()))
-					continue;
-				ins.nextWord = labelAddressMap.get(ins.labelNameForPass2.toLowerCase());
-				if (ins.nextWord == null)
-					throw new IllegalArgumentException(
-							"Label " + ins.labelNameForPass2 + " not found!");
-			}
+			ins.nextWord = labelAddressMap.get(ins.labelNameForPass2.toLowerCase());
+			if (ins.nextWord == null)
+				throw new IllegalArgumentException("Label " + ins.labelNameForPass2 + " not found!");
 		}
+
 	}
 
 	private static void fillResult(String[] result, Label label) {
@@ -120,14 +121,14 @@ public class LabelsPass2 {
 			long a1Val = (ins.arg1 != null) ? ins.arg1 : 0;
 			long a2Val = (ins.arg2 != null) ? ins.arg2 : 0;
 
-			String opcode = toBinary(opVal, 6, 0b00111111);
+			String opcode = toBinary(opVal, 6, 0x3F);
 			String arg1 = toBinary(a1Val, 4, 0x0F);
 			String arg2 = toBinary(a2Val, 4, 0x0F);
-			
-			result[label.address + idx++] = opcode + arg1 + arg2 + "00";
+
+			result[((int) label.address) + idx++] = opcode + arg1 + arg2 + "00";
 
 			if (ins.nextWord != null) {
-				result[label.address + idx++] = toBinary(ins.nextWord, 16, 0xFFFF);
+				result[((int) label.address) + idx++] = toBinary(ins.nextWord, 16, 0xFFFF);
 			}
 		}
 	}

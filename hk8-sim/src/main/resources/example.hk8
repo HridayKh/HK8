@@ -39,4 +39,5 @@
 
 ; include files, this line will be replaces by the contents of other files
 ; it will keep looping until are includes are resolved
-#include /workspaces/HK8/hk8-sim/src/main/resources/example_include.hk8
+; #include /workspaces/HK8/hk8-sim/src/main/resources/example_include.hk8
+#include /home/hridaykh/Code/experiments/HK8/hk8-sim/src/main/resources/example_include.hk8
