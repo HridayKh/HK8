@@ -11,6 +11,7 @@
 10,PERS,1,no
 11,COPY,2,no
 12,IMM,1,yes
+13,PCS,1,no
 21,ALU,1,no
 22,ADD,2,no
 23,ADDI,1,yes
