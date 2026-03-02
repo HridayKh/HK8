@@ -1,4 +1,4 @@
-# Control word for all components (36 total)
+# Control word for all components (37 total)
 
 - The components and orignal list was designed on paper and is used as a reference while writing this.
 - General Pattern for control word: `[SUB-COMPONENT]_[ACTION]_[BUS]`
