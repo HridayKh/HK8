@@ -32,7 +32,7 @@
 ## 3. Program Counter (PC)
 
 1. [x] `PC_OUT_B2`
-2. [ ] `PC_IN_B1`
+2. [x] `PC_IN_B1`
 3. [x] `PC_INC`
 
 ## 4. Arithmetic Logic Unit (ALU)
@@ -57,5 +57,5 @@
 
 ## 6. Control Unit (CU)
 
-1. [x] `INS_DONE` - Mark instruction as done. Starts next instruciton the next clock cycle.
+1. [x] `DONE` - Mark instruction as done. Starts next instruciton the next clock cycle.
 2. [x] `HALT`

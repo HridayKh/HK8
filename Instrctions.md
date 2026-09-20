@@ -6,157 +6,127 @@
 
 > Macros to define repeated combinations of micro-instructions.
 
-1. **`FETCH`**: `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `IR.IR_IN_B1`
-   > All instructions have implied step 0 as the `FETCH` macro unless specified otherwise.
-2. **`DONE`**: `PC.PC_INC`, `CU.INS_DONE`
-   > All instructions' last step contains the `DONE` macro unless specified otherwise.
-3. **`ALU_OUT`**: `ALU.RES_OUT_B1`, `RF.RALU_IN_B1`
+1. **`FETCH`**: `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `IR.IR_IN_B1`, `PC.PC_INC`
+    > All instructions have implied step 0 as the `FETCH` unless step 0 specified manually.
+2. **`ALU_OUT`**: `ALU.RES_OUT_B1`, `RF.RALU_IN_B1`, `CU.DONE`
+3. **`JUMP`**: `RF.R1_OUT_B1`, `PC.PC_IN_B1`, `CU.DONE`
+    > Jump flag checking is hardcoded in hardware for the specific instructions
 
-## No Operation
+## Ports, Memory, Registers, and Addressing (0-19, 11/20)
 
-- 00: NOP - No operation for 1 cycle.
-  0. `FETCH`, `DONE`
+- 00: LOAD - [srcMemAddrReg, destValReg] *memory -> register* (address from register)
+  1. `RF.R1_OUT_B1`, `MEM.MEM_ADDR_B1`, `MEM.MEM_OUT_B2`, `RF.R2_IN_B2`, `CU.DONE`
 
-## Ports, Memory, Registers, and Addressing (1-20)
+- 01: STR - [srcValReg, destMemAddrReg] *register -> memory* (address from register)
+  1. `RF.R2_OUT_B2`, `MEM.MEM_ADDR_B2`, `RF.R1_OUT_B1`, `MEM.MEM_IN_B1`, `CU.DONE`
 
-- 01: LDI - *memory -> register* (immideate value for address)
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`
-  2. `RF.R1_OUT_B1`, `MEM.MEM_ADDR_B1`, `MEM.MEM_OUT_B2`, `RF.R1_IN_B2`
+- 02: PSI - set port from immideate value
+  1. `MEM.PSR_IN_A1`, `CU.DONE`
 
-- 02: LDR - [srcMemAddrReg, destValReg] *memory -> register* (address from register)
-  1. `RF.R1_OUT_B1`, `MEM.MEM_ADDR_B1`, `MEM.MEM_OUT_B2`, `RF.R2_IN_B2`
+- 03: PSR - set port from register value
+  1. `RF.R1_OUT_B1`, `MEM.PSR_IN_B1`, `CU.DONE`
 
-- 03: STI - *register -> memory* (immideate value for address)
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `RF.R1_OUT_B1`, `MEM.MEM_IN_B1`
+- 04: PSS - (port select (register) store) store current port to register
+  1. `MEM.PSR_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
 
-- 04: STR - [srcValReg, destMemAddrReg] *register -> memory* (address from register)
-  1. `RF.R2_OUT_B2`, `MEM.MEM_ADDR_B2`, `RF.R1_OUT_B1`, `MEM.MEM_IN_B1`
+- 05: PEI - set port execute from immideate value
+  1. `MEM.PER_IN_A1`, `CU.DONE`
 
-- 05: PSRI - set port from immideate value
-  1. `MEM.PSR_IN_A1`
+- 06: PER - set port execute from register value
+  1. `RF.R1_OUT_B1`, `MEM.PER_IN_B1`, `CU.DONE`
 
-- 06: PSRR - set port from register value
-  1. `RF.R1_OUT_B1`, `MEM.PSR_IN_B1`
+- 07: PES - store current port execute to register
+  1. `MEM.PER_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
 
-- 07: PSRS - store current port to register
-  1. `MEM.PSR_OUT_B1`, `RF.R1_IN_B1`
+- 08: COPY - [srcReg, destReg] copy value from one register to another register
+  1. `RF.R1_OUT_B1`, `RF.R2_IN_B1`, `CU.DONE`
 
-- 08: PERI - set port execute from immideate value
-  1. `MEM.PER_IN_A1`
+- 09: IMM - set a register to an immideate value
+  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
 
-- 09: PERR - set port execute from register value
-  1. `RF.R1_OUT_B1`, `MEM.PER_IN_B1`
+- 10: PCS - Store program counter value (ie cutrent instruction address) to register
+  1. `PC.PC_OUT_B2`, `RF.R1_IN_B2`, `CU.DONE`
 
-- 10: PERS - store current port execute to register
-  1. `MEM.PER_OUT_B1`, `RF.R1_IN_B1`
+## ALU (20-39, 11/20)
 
-- 11: COPY - [srcReg, destReg] copy value from one register to another register
-  1. `RF.R1_OUT_B1`, `RF.R2_IN_B1`
+- 20: ALU - set the output register for the alu operations
+  1. `ALU.RID_IN_A1`, `CU.DONE`
 
-- 12: IMM - set a register to an immideate value
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_IN_B2`
-
-- 13: PCS - Store program counter value (ie cutrent instruction address) to register
-  1. `PC.PC_OUT_B2`, `RF.R1_IN_B2`
-
-## ALU (21-40)
-
-- 21: ALU - set the output register for the alu operations
-  1. `ALU.RID_IN_A1`
-
-- 22: ADD - add two registers and store in output register
+- 21: ADD - add two registers and store in output register
   1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_ADD`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 23: ADDI - add a register and an immideate value and store in output register
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_ADD`, `ALU.SET_FLAGS`
-  2. `ALU_OUT`
-
-- 24: SUB - subtract two registers and store in output register
+- 22: SUB - subtract two registers and store in output register
   1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_SUB`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 25: SUBI - subtract an immideate value from a register and store in output register
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_SUB`, `ALU.SET_FLAGS`
-  2. `ALU_OUT`
-
-- 26: INC - increment a register and store in output register
+- 23: INC - increment a register and store in output register
   1. `RF.R1_OUT_B1`, `ALU.ALU_INC`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 27: DEC - decrement a register and store in output register
+- 24: DEC - decrement a register and store in output register
   1. `RF.R1_OUT_B1`, `ALU.ALU_DEC`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 28: NOT - not a register and store in output register
+- 25: NOT - not a register and store in output register
   1. `RF.R1_OUT_B1`, `ALU.ALU_NOT`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 29: AND - and two registers and store in output register
+- 26: AND - and two registers and store in output register
   1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_AND`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 30: ANDI - and a register and an immideate value and store in output register
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_AND`, `ALU.SET_FLAGS`
-  2. `ALU_OUT`
-
-- 31: OR - or two registers and store in output register
+- 27: OR - or two registers and store in output register
   1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_OR`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 32: ORI - or a register and an immideate value and store in output register
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_OR`, `ALU.SET_FLAGS`
-  2. `ALU_OUT`
-
-- 33: XOR - xor two registers and store in output register
+- 28: XOR - xor two registers and store in output register
   1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_XOR`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 34: XORI - xor a register and an immideate value and store in output register
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_XOR`, `ALU.SET_FLAGS`
-  2. `ALU_OUT`
-
-- 35: SHL - shift left a register and store in output register
+- 29: SHL - shift left a register and store in output register
   1. `RF.R1_OUT_B1`, `ALU.ALU_SHL`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-- 36: SHR - shift right a register and store in output register
+- 30: SHR - shift right a register and store in output register
   1. `RF.R1_OUT_B1`, `ALU.ALU_SHR`, `ALU.SET_FLAGS`
   2. `ALU_OUT`
 
-## Branching (41-55)
+## Branching (40-49, 6/10)
 
-- 41: CMP - compare two registers (does subtract but does not store value to output register, only to alu internal temp register, sets flags)
-  1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_SUB`, `ALU.SET_FLAGS`
+- 40: CMP - compare two registers (does subtract but does not store value to output register, only to alu internal temp register, sets flags)
+  1. `RF.R1_OUT_B1`, `RF.R2_OUT_B2`, `ALU.ALU_SUB`, `ALU.SET_FLAGS`, `CU.DONE`
 
-- 42: CMPI - compare a register and an immideate value
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `RF.R1_OUT_B1`, `ALU.ALU_SUB`, `ALU.SET_FLAGS`
+- 41: JMP - jump to address from register
+  1. `JUMP`
 
-- 43: JMP - jump to address from register
-  1. 
+- 42: JZ - jump to address from register if zero flag is set
+  1. `JUMP`
 
-- 44: JMPI - jump to address from immideate value
-- 45: JZ - jump to address from register if zero flag is set
-- 46: JZI - jump to address from immideate value if zero flag is set
-- 47: JNZ - jump to address from register if zero flag is not set
-- 48: JNZI - jump to address from immideate value if zero flag is not set
-- 49: JC - jump to address from register if carry flag is set
-- 50: JCI - jump to address from immideate value if carry flag is set
-- 51: JNC - jump to address from register if carry flag is not set
-- 52: JNCI - jump to address from immideate value if carry flag is not set
+- 43: JNZ - jump to address from register if zero flag is not set
+  1. `JUMP`
 
-## Interupts (56-60) (not yet implemented)
+- 44: JC - jump to address from register if carry flag is set
+  1. `JUMP`
 
-- 56: RETI - return from interupt (only used in interupt triggered from the interupt handler externally, no way to start an interupt other ways)
-  0. `FETCH`, `DONE`
+- 45: JNC - jump to address from register if carry flag is not set
+  1. `JUMP`
 
-- 57: EI - enable interupts
-  0. `FETCH`, `DONE`
+## Interupts (50-54, 3/5) (not yet implemented)
 
-- 58: DI - disable interupts
-  0. `FETCH`, `DONE`
+- 50: RETI - return from interupt (only used in interupt triggered from the interupt handler externally, no way to start an interupt other ways)
+  1. `CU.DONE`
 
-## Other (61-63)
+- 51: EI - enable interupts
+  1. `CU.DONE`
 
-- 61: HALT - stop the clock
+- 52: DI - disable interupts
+  1. `CU.DONE`
+
+## Other (55-63, 2/8)
+
+- 62: NOP - No operation for 1 cycle.
+  0. `FETCH`, `CU.DONE`
+
+- 63: HALT - stop the clock
   0. `CU.HALT`
