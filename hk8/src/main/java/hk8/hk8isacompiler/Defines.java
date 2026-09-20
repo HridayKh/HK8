@@ -1,4 +1,4 @@
-package in.hridaykh.hk8isacompiler;
+package hk8.hk8isacompiler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

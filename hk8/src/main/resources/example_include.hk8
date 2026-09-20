@@ -1,0 +1,5 @@
+end:				 ; --- Finish ---
+    IMM R15 $outPath ;
+	STR	R2 R15       ; Store final result in memory
+	COPY R2 R15      ; Display result on 7-segment display
+	HALT             ; Stop execution

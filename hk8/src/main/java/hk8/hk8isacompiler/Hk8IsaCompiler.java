@@ -1,4 +1,4 @@
-package in.hridaykh.hk8isacompiler;
+package hk8.hk8isacompiler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import in.hridaykh.hk8isacompiler.model.Instruction;
-import in.hridaykh.hk8isacompiler.model.Label;
+import hk8.hk8isacompiler.model.Instruction;
+import hk8.hk8isacompiler.model.Label;
 
 public class Hk8IsaCompiler {
 
@@ -20,7 +20,7 @@ public class Hk8IsaCompiler {
 
 	public Hk8IsaCompiler(String[] args) throws IOException {
 		String inputFile = args[1]; // Main class ensures atleast 2 args
-		String outputFile = args.length > 1 ? args[2] : null;
+		String outputFile = args.length > 2 ? args[2] : null;
 
 		if (inputFile.isBlank()) {
 			System.err.println("Input file is required!");
@@ -51,14 +51,10 @@ public class Hk8IsaCompiler {
 		ClassLoader classLoader = getClass().getClassLoader();
 		InputStream inputStream = classLoader.getResourceAsStream(mapFileName);
 
-		if (inputStream == null)
-			throw new IllegalArgumentException("Resource file not found: " + mapFileName);
+		if (inputStream == null) throw new IllegalArgumentException("Resource file not found: " + mapFileName);
 
-		try (BufferedReader reader = new BufferedReader(
-				new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-			reader.lines().forEach(line -> {
-				parseInstructionMapLine(line);
-			});
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+			reader.lines().forEach(Hk8IsaCompiler::parseInstructionMapLine);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -86,11 +82,10 @@ public class Hk8IsaCompiler {
 				i.arg2 = 1;
 				break;
 			default:
-				throw new IllegalArgumentException(
-						"Invalid number of arguments for instruction: " + line);
+				throw new IllegalArgumentException("Invalid number of arguments for instruction: " + line);
 		}
 
-		i.nextWord = parts[3].equalsIgnoreCase("yes") ? (short) 1 : null;
+		i.nextWord = parts[3].equalsIgnoreCase("y") ? (short) 1 : null;
 
 		INSTRUCTION_MAP.put(parts[1].toLowerCase(), i);
 	}

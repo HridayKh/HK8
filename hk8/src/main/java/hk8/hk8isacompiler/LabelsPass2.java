@@ -1,11 +1,11 @@
-package in.hridaykh.hk8isacompiler;
+package hk8.hk8isacompiler;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import in.hridaykh.hk8isacompiler.model.Instruction;
-import in.hridaykh.hk8isacompiler.model.Label;
+import hk8.hk8isacompiler.model.Instruction;
+import hk8.hk8isacompiler.model.Label;
 
 public class LabelsPass2 {
 

@@ -1,4 +1,6 @@
-package in.hridaykh.hk8sim;
+package hk8;
+
+import hk8.hk8isacompiler.model.HexFileLine;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import in.hridaykh.hk8sim.models.HexFileLine;
 
 public class Hk8Sim {
 

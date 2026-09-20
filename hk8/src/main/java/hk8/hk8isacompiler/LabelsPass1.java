@@ -1,4 +1,4 @@
-package in.hridaykh.hk8isacompiler;
+package hk8.hk8isacompiler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import in.hridaykh.hk8isacompiler.model.Instruction;
-import in.hridaykh.hk8isacompiler.model.Label;
+import hk8.hk8isacompiler.model.Instruction;
+import hk8.hk8isacompiler.model.Label;
 
 public class LabelsPass1 {
 
@@ -73,9 +73,9 @@ public class LabelsPass1 {
 
 		if (parts.length == 1 && (isArg1Needed || isArg2Needed || isNextWordNeeded))
 			throw new IllegalArgumentException(
-					"Instruction " + insType.opcode + " needs arguments in line: " + line);
+				"Instruction " + insType.opcode + " needs arguments in line: " + line);
 
-		// System.out.println("\n\n\n\nlabels pass 1: processing line: " + line);
+		System.out.println("\n\n\n\nlabels pass 1: processing line: " + line);
 		if (parts.length < 2) {
 			instruction.opcode = insType.opcode;
 			label.instructions.add(instruction);
@@ -83,14 +83,9 @@ public class LabelsPass1 {
 		}
 
 		boolean firstPart = true;
-		// System.out.println("arg1: " + isArg1Needed + ", arg2: " + isArg2Needed + ",
-		// nextWord: "
-		// + isNextWordNeeded);
-
-		// int idx = 0;
+		int idx = 0;
 		for (String part : parts) {
-			// System.out.println(idx + ": |" + part + "|");
-			// idx++;
+			System.out.println(idx++ + ": |" + part + "|");
 			if (firstPart) {
 				instruction.opcode = insType.opcode;
 				firstPart = false;
@@ -104,7 +99,7 @@ public class LabelsPass1 {
 				instruction.nextWord = parseNextWordPass1(instruction, part);
 			} else {
 				throw new IllegalArgumentException(
-						"Too many arguments for instruction: " + insType.opcode);
+					"Too many arguments for instruction: " + insType.opcode);
 			}
 			// System.out.println(">>> " + instruction.toString());
 		}
@@ -211,7 +206,7 @@ public class LabelsPass1 {
 		if (i.nextWord != null)
 			isNextWordNeeded = true;
 
-		return new boolean[] { isArg1Needed, isArg2Needed, isNextWordNeeded };
+		return new boolean[]{isArg1Needed, isArg2Needed, isNextWordNeeded};
 	}
 
 }

@@ -1,5 +1,6 @@
 plugins {
 	id("java")
+	id("application")
 }
 
 group = "in.hridaykh"
@@ -10,11 +11,17 @@ repositories {
 }
 
 dependencies {
-	testImplementation(platform("org.junit:junit-bom:6.0.0"))
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	compileOnly("org.projectlombok:lombok:1.18.48")
+	annotationProcessor("org.projectlombok:lombok:1.18.48")
+
+	implementation("org.slf4j:slf4j-api:2.0.16")
+
+	implementation("ch.qos.logback:logback-classic:1.5.6")
 }
 
 tasks.test {
 	useJUnitPlatform()
+}
+application {
+	mainClass = "hk8.Main"
 }
