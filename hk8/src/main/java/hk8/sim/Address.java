@@ -1,4 +1,6 @@
 package hk8.sim;
 
-public class Address {
+public record Address(
+	Integer opcode, Integer arg1, Integer arg2, Integer nextWord
+) {
 }

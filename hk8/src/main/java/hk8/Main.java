@@ -1,6 +1,7 @@
 package hk8;
 
 import hk8.hk8isacompiler.Hk8IsaCompiler;
+import hk8.sim.Hk8Sim;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;

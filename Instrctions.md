@@ -12,7 +12,10 @@
 3. **`JUMP`**: `RF.R1_OUT_B1`, `PC.PC_IN_B1`, `CU.DONE`
     > Jump flag checking is hardcoded in hardware for the specific instructions
 
-## Ports, Memory, Registers, and Addressing (0-19, 11/20)
+## Nop, Ports, Memory, Registers, and Addressing (0-19, 11/20)
+
+- 00: NOP - No operation for 1 cycle. # Must be add the adr 0 as blank addresses are initialised as 0
+  0. `FETCH`, `CU.DONE`
 
 - 00: LOAD - [srcMemAddrReg, destValReg] *memory -> register* (address from register)
   1. `RF.R1_OUT_B1`, `MEM.MEM_ADDR_B1`, `MEM.MEM_OUT_B2`, `RF.R2_IN_B2`, `CU.DONE`
@@ -123,10 +126,7 @@
 - 52: DI - disable interupts
   1. `CU.DONE`
 
-## Other (55-63, 2/8)
-
-- 62: NOP - No operation for 1 cycle.
-  0. `FETCH`, `CU.DONE`
+## Other (55-63, 1/8)
 
 - 63: HALT - stop the clock
   0. `CU.HALT`

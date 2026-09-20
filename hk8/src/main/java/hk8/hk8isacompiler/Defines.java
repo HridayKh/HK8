@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Defines {
 
@@ -46,26 +48,16 @@ public class Defines {
 	}
 
 	private static String handleLineParts(String line) {
-		String newLine = "";
-		String[] parts = line.split("\\$");
-		boolean firstPartDone = false;
-		for (String part : parts) {
-			if (!firstPartDone) {
-				firstPartDone = true;
-				newLine += part;
-				continue;
-			}
-			if (part.isBlank())
-				throw new IllegalArgumentException("#define var name blank");
-
-			String varNameArr[] = part.split("\\W", 2);
-			String varName = varNameArr[0];
+		Matcher matcher = Pattern.compile("\\$([A-Za-z_][A-Za-z0-9_]*)").matcher(line);
+		StringBuffer newLine = new StringBuffer();
+		while (matcher.find()) {
+			String varName = matcher.group(1);
 			String varValue = DEFINES.get(varName);
 			if (varValue == null)
 				throw new IllegalArgumentException("unknown var: " + varName);
-
-			newLine += varValue + (varNameArr.length > 1 ? varNameArr[1] : "") + " ";
+			matcher.appendReplacement(newLine, Matcher.quoteReplacement(varValue));
 		}
-		return newLine;
+		matcher.appendTail(newLine);
+		return newLine.toString();
 	}
 }

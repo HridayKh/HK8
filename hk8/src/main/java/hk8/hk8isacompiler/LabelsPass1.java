@@ -75,7 +75,7 @@ public class LabelsPass1 {
 			throw new IllegalArgumentException(
 				"Instruction " + insType.opcode + " needs arguments in line: " + line);
 
-		System.out.println("\n\n\n\nlabels pass 1: processing line: " + line);
+//		System.out.println("\n\n\n\nlabels pass 1: processing line: " + line);
 		if (parts.length < 2) {
 			instruction.opcode = insType.opcode;
 			label.instructions.add(instruction);
@@ -83,15 +83,20 @@ public class LabelsPass1 {
 		}
 
 		boolean firstPart = true;
-		int idx = 0;
+//		int idx = 0;
 		for (String part : parts) {
-			System.out.println(idx++ + ": |" + part + "|");
+//			System.out.println(idx++ + ": |" + part + "|");
 			if (firstPart) {
 				instruction.opcode = insType.opcode;
 				firstPart = false;
 				continue;
 			}
-			if (isArg1Needed && instruction.arg1 == null) {
+			if (part.startsWith(":")) {
+				if (instruction.nextWord != null || instruction.labelNameForPass2 != null)
+					throw new IllegalArgumentException(
+						"Too many arguments for instruction: " + insType.opcode);
+				instruction.nextWord = parseNextWordPass1(instruction, part);
+			} else if (isArg1Needed && instruction.arg1 == null) {
 				instruction.arg1 = parseNumber(part);
 			} else if (isArg2Needed && instruction.arg2 == null) {
 				instruction.arg2 = parseNumber(part);

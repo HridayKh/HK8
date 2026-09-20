@@ -10,7 +10,7 @@
 #define bR r1			; define second operation
 #define b 10			; define second operation
 
-; execution starts at whatever label is adress 0
+; execution starts at whatever label is address 0
 ; need to be in address order
 ; syntax: address name:
 ; note: indentation in line is optional but instruction separator is new line
@@ -25,7 +25,7 @@
 	IMM	r2 0		; Result Accumulator = 0
 	ALU	r2		    ; Set ALU Output to R2
 
-10 loop:			; --- Main Loop ---		TODO BUG WRONG ADDRESS EVEN THO GIVEN
+10 loop:			; --- Main Loop ---
 	CMP	$aR R15  	; Check if multiplier is 0
 	JZ	:end		; If zero, we are done
 

@@ -10,9 +10,11 @@
  1. [x] `PSR_OUT_B1`
  2. [x] `PSR_IN_B1`
  3. [x] `PSR_IN_A1`
+
  4. [x] `PER_OUT_B1`
  5. [x] `PER_IN_B1`
  6. [x] `PER_IN_A1`
+ 
  7. [x] `MEM_ADDR_B1`
  8. [x] `MEM_ADDR_B2`
  9. [x] `MEM_OUT_B1`
