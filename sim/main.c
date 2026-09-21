@@ -17,7 +17,7 @@ u16 ir = 0;
 u16 pc = 0;
 
 #define MEMORY_SIZE 65536
-u16 mem[MEMORY_SIZE] = {0};
+u16 mem[MEMORY_SIZE] = {0, 2016, 14, 2048};
 u16 mem_adr = 0;
 
 #define REGISTER_FILE_SIZE 32
@@ -119,10 +119,52 @@ void CU__DONE() { // prep for next clock cycle
 }
 void CU__HALT() { _HALTED = 1; }
 
+// shortcuts
+void FETCH() {
+  PC__PC_OUT_B2();
+  MEM__MEM_ADDR_B2();
+  MEM__MEM_OUT_B1();
+  IR__IR_IN_B1();
+  PC__PC_INC();
+}
+
+// microcode
+typedef void (*micro_op_t)(void);
+#define MAX_MICRO_STEPS 4
+#define NUM_OPCODES 64
+micro_op_t DISPATCH_TABLE[NUM_OPCODES][MAX_MICRO_STEPS] = {
+    [0] = {
+        FETCH,    	  // Step 0: Drive R1 to bus1
+        RF__R2_OUT_B2,    // Step 1: Drive R2 to bus2
+        ALU__ALU_ADD,     // Step 2: Compute bus1 + bus2 -> ALU_OUT & update flags
+        ALU__RES_OUT_B1,  // Step 3: Drive ALU_OUT to bus1
+        RF__R1_IN_B1,     // Step 4: Latch bus1 into reg[ARG1]
+        CU__DONE          // Step 5: Reset buses / signal end of instruction
+    },
+
+    // Opcode 1: SUB
+    [1] = {
+        RF__R1_OUT_B1,
+        RF__R2_OUT_B2,
+        ALU__ALU_SUB,
+        ALU__RES_OUT_B1,
+        RF__R1_IN_B1,
+        CU__DONE
+    },
+
+    // Opcode 63: HALT
+    [63] = {
+        CU__HALT,
+        CU__DONE
+    }
+};
+
 int main(void) {
-
+  printf("starting");
+  u8 step = 0;
   while (_HALTED) {
-
+    
   }
+  printf("halted");
   return 0;
 }
