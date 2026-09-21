@@ -1,4 +1,4 @@
-# Control word for all components (31 total)
+# Control word for all components (37 total)
 
 - The components and orignal list was designed on paper and is used as a reference while writing this.
 - General Pattern for control word: `[SUB-COMPONENT]_[ACTION]_[BUS]`
@@ -7,11 +7,19 @@
 
 ## 1. Memory / Ports (MEM)
 
-1. [x] `MEM_ADDR_B1`
-2. [x] `MEM_ADDR_B2`
-3. [x] `MEM_OUT_B1`
-4. [x] `MEM_OUT_B2`
-5. [x] `MEM_IN_B1`
+ 1. [x] `PSR_OUT_B1`
+ 2. [x] `PSR_IN_B1`
+ 3. [x] `PSR_IN_A1`
+
+ 4. [x] `PER_OUT_B1`
+ 5. [x] `PER_IN_B1`
+ 6. [x] `PER_IN_A1`
+ 
+ 7. [x] `MEM_ADDR_B1`
+ 8. [x] `MEM_ADDR_B2`
+ 9. [x] `MEM_OUT_B1`
+10. [x] `MEM_OUT_B2`
+11. [x] `MEM_IN_B1`
 
 ## 2. Register File (RF)
 
@@ -31,8 +39,6 @@
 
 ## 4. Arithmetic Logic Unit (ALU)
 
-> micro-instricton 1-10 also set flags
-
  1. [x] `ALU_ADD` - Add
  2. [x] `ALU_SUB` - Subtract
  3. [x] `ALU_INC` - Increment
@@ -45,6 +51,7 @@
 10. [x] `ALU_SHR` - Shift right
 11. [x] `RID_IN_A1`  - Select output register id for alu resutls.
 12. [x] `RES_OUT_B1` - Output result from temprary result register to bus 1.
+13. [x] `SET_FLAGS`
 
 ## 5. Instruciton Register (IR)
 

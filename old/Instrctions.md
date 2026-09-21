@@ -12,7 +12,7 @@
 3. **`JUMP`**: `RF.R1_OUT_B1`, `PC.PC_IN_B1`, `CU.DONE`
     > Jump flag checking is hardcoded in hardware for the specific instructions
 
-## Nop, Ports, Memory, Registers, and Addressing (0-19, 5/20)
+## Nop, Ports, Memory, Registers, and Addressing (0-19, 11/20)
 
 - 00: NOP - No operation for 1 cycle. # Must be add the adr 0 as blank addresses are initialised as 0
   0. `FETCH`, `CU.DONE`
@@ -23,13 +23,31 @@
 - 01: STR - [srcValReg, destMemAddrReg] *register -> memory* (address from register)
   1. `RF.R2_OUT_B2`, `MEM.MEM_ADDR_B2`, `RF.R1_OUT_B1`, `MEM.MEM_IN_B1`, `CU.DONE`
 
-- 02: COPY - [srcReg, destReg] copy value from one register to another register
+- 02: PSI - set port from immideate value
+  1. `MEM.PSR_IN_A1`, `CU.DONE`
+
+- 03: PSR - set port from register value
+  1. `RF.R1_OUT_B1`, `MEM.PSR_IN_B1`, `CU.DONE`
+
+- 04: PSS - (port select (register) store) store current port to register
+  1. `MEM.PSR_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
+
+- 05: PEI - set port execute from immideate value
+  1. `MEM.PER_IN_A1`, `CU.DONE`
+
+- 06: PER - set port execute from register value
+  1. `RF.R1_OUT_B1`, `MEM.PER_IN_B1`, `CU.DONE`
+
+- 07: PES - store current port execute to register
+  1. `MEM.PER_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
+
+- 08: COPY - [srcReg, destReg] copy value from one register to another register
   1. `RF.R1_OUT_B1`, `RF.R2_IN_B1`, `CU.DONE`
 
-- 03: IMM - set a register to an immideate value
+- 09: IMM - set a register to an immideate value
   1. `PC.PC_INC`, `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
 
-- 04: PCS - Store program counter value (ie cutrent instruction address) to register
+- 10: PCS - Store program counter value (ie cutrent instruction address) to register
   1. `PC.PC_OUT_B2`, `RF.R1_IN_B2`, `CU.DONE`
 
 ## ALU (20-39, 11/20)
