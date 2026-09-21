@@ -31,9 +31,9 @@ u8 flags = 0;
 #define FLAG_ZERO (1 << 2) // 0b0000 0100 (4)
 #define FLAG_INTR (1 << 1) // 0b0000 0010 (2)
 #define FLAG_MODE (1 << 0) // 0b0000 0001 (1)
-#define UPDATE_ALU_FLAGS(temp)                                              \
+#define UPDATE_ALU_FLAGS(temp)                                                 \
   do {                                                                         \
-    flags = (flags & ~FLAG_CARY) | (((temp) & 0x10000) >> 13);                \
+    flags = (flags & ~FLAG_CARY) | (((temp) & 0x10000) >> 13);                 \
     flags = (flags & ~FLAG_ZERO) | ((ALU_OUT == 0) << 2);                      \
   } while (0)
 
@@ -119,4 +119,10 @@ void CU__DONE() { // prep for next clock cycle
 }
 void CU__HALT() { _HALTED = 1; }
 
-int main(void) { return 0; }
+int main(void) {
+
+  while (_HALTED) {
+
+  }
+  return 0;
+}
