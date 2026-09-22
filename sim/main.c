@@ -17,7 +17,7 @@ u16 ir = 0;
 u16 pc = 0;
 
 #define MEMORY_SIZE 65536
-u16 mem[MEMORY_SIZE] = {0, 2016, 14, 2048};
+u16 mem[MEMORY_SIZE];
 u16 mem_adr = 0;
 
 #define REGISTER_FILE_SIZE 32
@@ -39,6 +39,9 @@ u8 flags = 0;
 
 u16 bus1 = 0;
 u16 bus2 = 0;
+u8 step = 0;
+u8 subStep = 0;
+u8 instructionDone = 0;
 
 void MEM__MEM_ADDR_B1() { mem_adr = bus1; }
 void MEM__MEM_ADDR_B2() { mem_adr = bus2; }
@@ -116,55 +119,92 @@ void IR__IR_IN_B1() { ir = bus1; }
 void CU__DONE() { // prep for next clock cycle
   bus1 = 0;
   bus2 = 0;
+  step = 0;
+  subStep = 0;
+  instructionDone = 1;
+  for (int i = 0; i < 32; i++) {
+    printf("R%02d: 0x%04X\t", i, reg[i]);
+    if ((i + 1) % 8 == 0) {
+      printf("\n");
+    }
+  }
 }
 void CU__HALT() { _HALTED = 1; }
 
-// shortcuts
-void FETCH() {
+// temp shortcuts
+void MACRO__FETCH() {
   PC__PC_OUT_B2();
   MEM__MEM_ADDR_B2();
   MEM__MEM_OUT_B1();
   IR__IR_IN_B1();
   PC__PC_INC();
 }
+void MACRO__ALU_OUT() {
+  ALU__RES_OUT_B1();
+  RF__RALU_IN_B1();
+  CU__DONE();
+}
+void MACRO__JUMP() {
+  RF__R1_OUT_B1();
+  PC__PC_IN_B1();
+  CU__DONE();
+}
 
-// microcode
-typedef void (*micro_op_t)(void);
-#define MAX_MICRO_STEPS 4
-#define NUM_OPCODES 64
-micro_op_t DISPATCH_TABLE[NUM_OPCODES][MAX_MICRO_STEPS] = {
-    [0] = {
-        FETCH,    	  // Step 0: Drive R1 to bus1
-        RF__R2_OUT_B2,    // Step 1: Drive R2 to bus2
-        ALU__ALU_ADD,     // Step 2: Compute bus1 + bus2 -> ALU_OUT & update flags
-        ALU__RES_OUT_B1,  // Step 3: Drive ALU_OUT to bus1
-        RF__R1_IN_B1,     // Step 4: Latch bus1 into reg[ARG1]
-        CU__DONE          // Step 5: Reset buses / signal end of instruction
-    },
+typedef void (*func)(void);
 
-    // Opcode 1: SUB
-    [1] = {
-        RF__R1_OUT_B1,
-        RF__R2_OUT_B2,
-        ALU__ALU_SUB,
-        ALU__RES_OUT_B1,
-        RF__R1_IN_B1,
-        CU__DONE
-    },
+func CONTROL_ID_TO_SIGNAL[33] = {
+    MEM__MEM_ADDR_B1, MEM__MEM_ADDR_B2, MEM__MEM_OUT_B1, MEM__MEM_OUT_B2, // 0
+    MEM__MEM_IN_B1,   RF__R1_OUT_B1,    RF__R1_IN_B1,    RF__R1_IN_B2,    // 4
+    RF__R2_OUT_B2,    RF__R2_IN_B1,     RF__R2_IN_B2,    RF__RALU_IN_B1,  // 8
+    PC__PC_OUT_B2,    PC__PC_IN_B1,     PC__PC_INC,      ALU__ALU_ADD,    // 12
+    ALU__ALU_SUB,     ALU__ALU_INC,     ALU__ALU_DEC,    ALU__ALU_NOT,    // 16
+    ALU__ALU_AND,     ALU__ALU_OR,      ALU__ALU_XOR,    ALU__ALU_SHL,    // 20
+    ALU__ALU_SHR,     ALU__RID_IN_A1,   ALU__RES_OUT_B1, IR__IR_IN_B1,    // 24
+    CU__DONE,         CU__HALT,         MACRO__FETCH,    MACRO__ALU_OUT,  // 28
+    MACRO__JUMP};                                                         // 32
 
-    // Opcode 63: HALT
-    [63] = {
-        CU__HALT,
-        CU__DONE
-    }
-};
+#include "microcode.c"
 
 int main(void) {
-  printf("starting");
-  u8 step = 0;
-  while (_HALTED) {
-    
+  printf("Starting CPU simulation...\n");
+
+  mem[0] = 0x0000; // NOP
+  mem[1] = 0x13E0; // IMM r31, ...
+  mem[2] = 0xabcd; // Data
+  mem[3] = 0xfc00; // HALT
+
+  while (!_HALTED) {
+    if (step == 0 && subStep == 0)
+      printf("\npc: %d\n", pc);
+    instructionDone = 0;
+
+    u8 sig = MICROCODE_ROM[OPCODE][step][subStep];
+
+    if (sig >= 33) {
+      printf("ERROR: Unrecognized signal ID %d at OP:%d Step:%d Sub:%d\n", sig,
+             OPCODE, step, subStep);
+      break;
+    }
+
+    CONTROL_ID_TO_SIGNAL[sig]();
+
+    if (_HALTED || instructionDone) {
+      continue;
+    }
+
+    subStep++;
+
+    if (subStep == 8) {
+      subStep = 0;
+      step++;
+
+      if (step == 4) {
+        printf("ERROR: Instruction reached step 4 without CU__DONE\n");
+        break;
+      }
+    }
   }
-  printf("halted");
+
+  printf("Halted successfully.\n");
   return 0;
 }
