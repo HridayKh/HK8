@@ -36,12 +36,12 @@ u8 flags = 0;
     flags = (flags & ~FLAG_CARY) | (((temp) & 0x10000) >> 13);                 \
     flags = (flags & ~FLAG_ZERO) | ((ALU_OUT == 0) << 2);                      \
   } while (0)
+#define IS_KERNEL_MODE ((flags & FLAG_MODE) == 0)
 
 u16 bus1 = 0;
 u16 bus2 = 0;
 u8 step = 0;
 u8 subStep = 0;
-u8 instructionDone = 0;
 
 void MEM__MEM_ADDR_B1() { mem_adr = bus1; }
 void MEM__MEM_ADDR_B2() { mem_adr = bus2; }
@@ -120,10 +120,9 @@ void CU__DONE() { // prep for next clock cycle
   bus1 = 0;
   bus2 = 0;
   step = 0;
-  subStep = 0;
-  instructionDone = 1;
+  subStep = -1;
   for (int i = 0; i < 32; i++) {
-    printf("R%02d: 0x%04X\t", i, reg[i]);
+    printf("%s%d: 0x%04X\t", i < 10 ? " " : "", i, reg[i]);
     if ((i + 1) % 8 == 0) {
       printf("\n");
     }
@@ -164,45 +163,55 @@ func CONTROL_ID_TO_SIGNAL[33] = {
     MACRO__JUMP};                                                         // 32
 
 #include "microcode.c"
+#include "memory.c"
+
+#define USER_ROM KERNEL_ROM
 
 int main(void) {
   printf("Starting CPU simulation...\n");
-
-  mem[0] = 0x0000; // NOP
-  mem[1] = 0x13E0; // IMM r31, ...
-  mem[2] = 0xabcd; // Data
-  mem[3] = 0xfc00; // HALT
-
+  
+  mem[0] = (u16)0x0000; // NOP
+  mem[1] = (u16)0x13E0; // IMM r31, ...
+  mem[2] = (u16)0xabcd; // Data
+  mem[3] = (u16)0xfc00; // HALT
+  
+  u32 clock = 0;
   while (!_HALTED) {
-    if (step == 0 && subStep == 0)
-      printf("\npc: %d\n", pc);
-    instructionDone = 0;
+    if (subStep >= 8 && subStep != 255) { // start the next step
+      subStep = 0;
+      step++;
+      if (step >= 4) {
+        printf("ERROR: Instruction reached step 4 without CU__DONE\n");
+        break;
+      }
+    }
 
-    u8 sig = MICROCODE_ROM[OPCODE][step][subStep];
+    if (step == 0 && subStep == 0) // clock and pc at start of ever instruciton
+      printf("\n\n[%d] pc %d\n", clock++, pc);
+
+    u8 sig = IS_KERNEL_MODE ? KERNEL_ROM[OPCODE][step][subStep]
+                            : USER_ROM[OPCODE][step][subStep];
+    u8 sig_next = subStep < 7
+                      ? (IS_KERNEL_MODE ? KERNEL_ROM[OPCODE][step][subStep + 1]
+                                        : USER_ROM[OPCODE][step][subStep + 1])
+                      : sig;
+
+    printf("MICROCODE_ROM[%d][%d][%d] = %d\n", OPCODE, step, subStep, sig);
+
+    if (sig == 0 && sig_next == 0) {
+      subStep = 0;
+      step++;
+      continue;
+    }
 
     if (sig >= 33) {
       printf("ERROR: Unrecognized signal ID %d at OP:%d Step:%d Sub:%d\n", sig,
              OPCODE, step, subStep);
       break;
     }
-
     CONTROL_ID_TO_SIGNAL[sig]();
 
-    if (_HALTED || instructionDone) {
-      continue;
-    }
-
     subStep++;
-
-    if (subStep == 8) {
-      subStep = 0;
-      step++;
-
-      if (step == 4) {
-        printf("ERROR: Instruction reached step 4 without CU__DONE\n");
-        break;
-      }
-    }
   }
 
   printf("Halted successfully.\n");

@@ -47,7 +47,11 @@ opcode   ||   Arg2
 
 - Each page is the lease significant 8b
 - Each page is 256 bytes long
-- The mmu design is currently being cooked
+- a new register called pid register stores the current process id
+- it is 8b wide and pid 0 means address allowed to be accessed by all
+- provides a map for virtual pages to real one in user mode and verifies the process is allwoed
+- it is fully managed by the kernel
+- the kernel allocates more pages per process if recieved a syscall
 
 ## 4. Interupts
 

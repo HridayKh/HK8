@@ -27,7 +27,7 @@
   1. `RF.R1_OUT_B1`, `RF.R2_IN_B1`, `CU.DONE`
 
 - 04: IMM - set a register to an immideate value
-  1. `PC.PC_INC`, `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`, `CU.DONE`
+  1. `PC.PC_OUT_B2`, `MEM.MEM_ADDR_B2`, `MEM.MEM_OUT_B1`, `RF.R1_IN_B1`, `PC.PC_INC`, `CU.DONE`
 
 - 05: PCS - Store program counter value (ie cutrent instruction address) to register
   1. `PC.PC_OUT_B2`, `RF.R1_IN_B2`, `CU.DONE`
