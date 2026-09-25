@@ -43,8 +43,8 @@
 22. [x] `ALU_XOR` - Bitwise XOR
 23. [x] `ALU_SHL` - Shift left
 24. [x] `ALU_SHR` - Shift right
-25. [x] `RID_IN_A1`  - Select output register id for alu resutls.
-26. [x] `RES_OUT_B1` - Output result from temprary result register to bus 1.
+25. [x] `RID_IN_A1`  - Select output register id for alu resutls
+26. [x] `RES_OUT_B1` - Output result from temprary result register to bus 1
 
 ## 5. Instruciton Register (IR)
 

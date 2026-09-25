@@ -163,7 +163,6 @@ func CONTROL_ID_TO_SIGNAL[33] = {
     MACRO__JUMP};                                                         // 32
 
 #include "microcode.c"
-#include "memory.c"
 
 #define USER_ROM KERNEL_ROM
 

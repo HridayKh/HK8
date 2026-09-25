@@ -1,0 +1,487 @@
+{
+	"notes": {
+		"ALU.RID_IN_A1": "Select output register id for alu results",
+		"ALU.RES_OUT_B1": "Output result from temporary result register to bus 1",
+		"RALU_IN_B1": "Input to register selected by Alu Output Register Id Register on bus 1",
+		"MACRO.FETCH": "All instructions have implied step 0 as the FETCH unless step 0 specified manually",
+		"MACRO.JUMP": "Jump flag checking is hardcoded in hardware for the specific instructions"
+	},
+	"control_word": {
+		"MEM": [
+			"MEM_ADDR_B1",
+			"MEM_ADDR_B2",
+			"MEM_OUT_B1",
+			"MEM_OUT_B2",
+			"MEM_IN_B1"
+		],
+		"RF": [
+			"R1_OUT_B1",
+			"R1_IN_B1",
+			"R1_IN_B2",
+			"R2_OUT_B2",
+			"R2_IN_B1",
+			"R2_IN_B2",
+			"RALU_IN_B1"
+		],
+		"PC": [
+			"PC_OUT_B2",
+			"PC_IN_B1",
+			"PC_INC"
+		],
+		"ALU": [
+			"ALU_ADD",
+			"ALU_SUB",
+			"ALU_INC",
+			"ALU_DEC",
+			"ALU_NOT",
+			"ALU_AND",
+			"ALU_OR",
+			"ALU_XOR",
+			"ALU_SHL",
+			"ALU_SHR",
+			"RID_IN_A1",
+			"RES_OUT_B1"
+		],
+		"IR": [
+			"IR_IN_B1"
+		],
+		"CU": [
+			"DONE",
+			"HALT"
+		],
+		"UNKNOWN": []
+	},
+	"macros": {
+		"FETCH": [
+			"PC.PC_OUT_B2",
+			"MEM.MEM_ADDR_B2",
+			"MEM.MEM_OUT_B1",
+			"IR.IR_IN_B1",
+			"PC.PC_INC"
+		],
+		"ALU_OUT": [
+			"ALU.RES_OUT_B1",
+			"RF.RALU_IN_B1",
+			"CU.DONE"
+		],
+		"JUMP": [
+			"RF.R1_OUT_B1",
+			"PC.PC_IN_B1",
+			"CU.DONE"
+		]
+	},
+	"instructions": {
+		"00": {
+			"kernel_only": false,
+			"name": "NOP",
+			"steps": [
+				[
+					"FETCH",
+					"CU.DONE"
+				]
+			],
+			"notes": "No operation for 1 cycle. Must be at addr 0 as blank addresses initialize to 0."
+		},
+		"01": {
+			"kernel_only": false,
+			"name": "LOAD",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"MEM.MEM_ADDR_B1",
+					"MEM.MEM_OUT_B2",
+					"RF.R2_IN_B2",
+					"CU.DONE"
+				]
+			],
+			"notes": "[srcMemAddrReg, destValReg] memory -> register (address from register)"
+		},
+		"02": {
+			"kernel_only": false,
+			"name": "STR",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R2_OUT_B2",
+					"MEM.MEM_ADDR_B2",
+					"RF.R1_OUT_B1",
+					"MEM.MEM_IN_B1",
+					"CU.DONE"
+				]
+			],
+			"notes": "[srcValReg, destMemAddrReg] register -> memory (address from register)"
+		},
+		"03": {
+			"kernel_only": false,
+			"name": "COPY",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_IN_B1",
+					"CU.DONE"
+				]
+			],
+			"notes": "[srcReg, destReg] copy value from one register to another register"
+		},
+		"04": {
+			"kernel_only": false,
+			"name": "IMM",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"PC.PC_OUT_B2",
+					"MEM.MEM_ADDR_B2",
+					"MEM.MEM_OUT_B1",
+					"RF.R1_IN_B1",
+					"PC.PC_INC",
+					"CU.DONE"
+				]
+			],
+			"notes": "Set a register to an immediate value"
+		},
+		"05": {
+			"kernel_only": false,
+			"name": "PCS",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"PC.PC_OUT_B2",
+					"RF.R1_IN_B2",
+					"CU.DONE"
+				]
+			],
+			"notes": "Store program counter value (current instruction address) to register"
+		},
+		"20": {
+			"kernel_only": false,
+			"name": "ALU",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"ALU.RID_IN_A1",
+					"CU.DONE"
+				]
+			],
+			"notes": "Set the output register for the alu operations"
+		},
+		"21": {
+			"kernel_only": false,
+			"name": "ADD",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_ADD"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Add two registers and store in output register"
+		},
+		"22": {
+			"kernel_only": false,
+			"name": "SUB",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_SUB"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Subtract two registers and store in output register"
+		},
+		"23": {
+			"kernel_only": false,
+			"name": "INC",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"ALU.ALU_INC"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Increment a register and store in output register"
+		},
+		"24": {
+			"kernel_only": false,
+			"name": "DEC",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"ALU.ALU_DEC"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Decrement a register and store in output register"
+		},
+		"25": {
+			"kernel_only": false,
+			"name": "NOT",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"ALU.ALU_NOT"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Not a register and store in output register"
+		},
+		"26": {
+			"kernel_only": false,
+			"name": "AND",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_AND"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "And two registers and store in output register"
+		},
+		"27": {
+			"kernel_only": false,
+			"name": "OR",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_OR"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Or two registers and store in output register"
+		},
+		"28": {
+			"kernel_only": false,
+			"name": "XOR",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_XOR"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Xor two registers and store in output register"
+		},
+		"29": {
+			"kernel_only": false,
+			"name": "SHL",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"ALU.ALU_SHL"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Shift left a register and store in output register"
+		},
+		"30": {
+			"kernel_only": false,
+			"name": "SHR",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"ALU.ALU_SHR"
+				],
+				[
+					"ALU_OUT"
+				]
+			],
+			"notes": "Shift right a register and store in output register"
+		},
+		"40": {
+			"kernel_only": false,
+			"name": "CMP",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"RF.R1_OUT_B1",
+					"RF.R2_OUT_B2",
+					"ALU.ALU_SUB",
+					"CU.DONE"
+				]
+			],
+			"notes": "Compare two registers (sets flags without outputting result)"
+		},
+		"41": {
+			"kernel_only": false,
+			"name": "JMP",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"JUMP"
+				]
+			],
+			"notes": "Jump to address from register"
+		},
+		"42": {
+			"kernel_only": false,
+			"name": "JZ",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"JUMP"
+				]
+			],
+			"notes": "Jump to address from register if zero flag is set"
+		},
+		"43": {
+			"kernel_only": false,
+			"name": "JNZ",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"JUMP"
+				]
+			],
+			"notes": "Jump to address from register if zero flag is not set"
+		},
+		"44": {
+			"kernel_only": false,
+			"name": "JC",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"JUMP"
+				]
+			],
+			"notes": "Jump to address from register if carry flag is set"
+		},
+		"45": {
+			"kernel_only": false,
+			"name": "JNC",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"JUMP"
+				]
+			],
+			"notes": "Jump to address from register if carry flag is not set"
+		},
+		"50": {
+			"kernel_only": false,
+			"name": "RETI",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"CU.DONE"
+				]
+			],
+			"notes": "Return from interrupt"
+		},
+		"51": {
+			"kernel_only": false,
+			"name": "EI",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"CU.DONE"
+				]
+			],
+			"notes": "Enable interrupts"
+		},
+		"52": {
+			"kernel_only": false,
+			"name": "DI",
+			"steps": [
+				[
+					"FETCH"
+				],
+				[
+					"CU.DONE"
+				]
+			],
+			"notes": "Disable interrupts"
+		},
+		"63": {
+			"kernel_only": false,
+			"name": "HALT",
+			"steps": [
+				[
+					"CU.HALT"
+				]
+			],
+			"notes": "Stop the clock"
+		}
+	}
+}
