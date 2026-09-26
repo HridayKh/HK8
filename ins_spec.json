@@ -43,7 +43,8 @@
 			"RES_OUT_B1"
 		],
 		"IR": [
-			"IR_IN_B1"
+			"IR_IN_B1",
+			"ARG2_TO_B1"
 		],
 		"CU": [
 			"DONE",
@@ -72,22 +73,22 @@
 	},
 	"instructions": {
 		"00": {
-			"kernel_only": false,
 			"name": "NOP",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH",
+					"MACRO.FETCH",
 					"CU.DONE"
 				]
 			],
 			"notes": "No operation for 1 cycle. Must be at addr 0 as blank addresses initialize to 0."
 		},
 		"01": {
-			"kernel_only": false,
 			"name": "LOAD",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -100,11 +101,11 @@
 			"notes": "[srcMemAddrReg, destValReg] memory -> register (address from register)"
 		},
 		"02": {
-			"kernel_only": false,
 			"name": "STR",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R2_OUT_B2",
@@ -117,11 +118,11 @@
 			"notes": "[srcValReg, destMemAddrReg] register -> memory (address from register)"
 		},
 		"03": {
-			"kernel_only": false,
 			"name": "COPY",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -132,11 +133,11 @@
 			"notes": "[srcReg, destReg] copy value from one register to another register"
 		},
 		"04": {
-			"kernel_only": false,
 			"name": "IMM",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"PC.PC_OUT_B2",
@@ -150,11 +151,26 @@
 			"notes": "Set a register to an immediate value"
 		},
 		"05": {
+			"name": "IMS",
 			"kernel_only": false,
-			"name": "PCS",
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
+				],
+				[
+					"IR.ARG2_TO_B1",
+					"RF.R1_IN_B1",
+					"CU.DONE"
+				]
+			],
+			"notes": "Set a register to a small constant immediate value (0-31)"
+		},
+		"06": {
+			"name": "PCS",
+			"kernel_only": false,
+			"steps": [
+				[
+					"MACRO.FETCH"
 				],
 				[
 					"PC.PC_OUT_B2",
@@ -165,11 +181,11 @@
 			"notes": "Store program counter value (current instruction address) to register"
 		},
 		"20": {
-			"kernel_only": false,
 			"name": "ALU",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"ALU.RID_IN_A1",
@@ -179,11 +195,11 @@
 			"notes": "Set the output register for the alu operations"
 		},
 		"21": {
-			"kernel_only": false,
 			"name": "ADD",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -191,17 +207,17 @@
 					"ALU.ALU_ADD"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Add two registers and store in output register"
 		},
 		"22": {
-			"kernel_only": false,
 			"name": "SUB",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -209,68 +225,68 @@
 					"ALU.ALU_SUB"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Subtract two registers and store in output register"
 		},
 		"23": {
-			"kernel_only": false,
 			"name": "INC",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
 					"ALU.ALU_INC"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Increment a register and store in output register"
 		},
 		"24": {
-			"kernel_only": false,
 			"name": "DEC",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
 					"ALU.ALU_DEC"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Decrement a register and store in output register"
 		},
 		"25": {
-			"kernel_only": false,
 			"name": "NOT",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
 					"ALU.ALU_NOT"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Not a register and store in output register"
 		},
 		"26": {
-			"kernel_only": false,
 			"name": "AND",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -278,17 +294,17 @@
 					"ALU.ALU_AND"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "And two registers and store in output register"
 		},
 		"27": {
-			"kernel_only": false,
 			"name": "OR",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -296,17 +312,17 @@
 					"ALU.ALU_OR"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Or two registers and store in output register"
 		},
 		"28": {
-			"kernel_only": false,
 			"name": "XOR",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -314,51 +330,51 @@
 					"ALU.ALU_XOR"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Xor two registers and store in output register"
 		},
 		"29": {
-			"kernel_only": false,
 			"name": "SHL",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
 					"ALU.ALU_SHL"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Shift left a register and store in output register"
 		},
 		"30": {
-			"kernel_only": false,
 			"name": "SHR",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
 					"ALU.ALU_SHR"
 				],
 				[
-					"ALU_OUT"
+					"MACRO.ALU_OUT"
 				]
 			],
 			"notes": "Shift right a register and store in output register"
 		},
 		"40": {
-			"kernel_only": false,
 			"name": "CMP",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"RF.R1_OUT_B1",
@@ -370,76 +386,90 @@
 			"notes": "Compare two registers (sets flags without outputting result)"
 		},
 		"41": {
-			"kernel_only": false,
 			"name": "JMP",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
-					"JUMP"
+					"MACRO.JUMP"
 				]
 			],
 			"notes": "Jump to address from register"
 		},
 		"42": {
-			"kernel_only": false,
 			"name": "JZ",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
-					"JUMP"
+					"MACRO.JUMP"
 				]
 			],
 			"notes": "Jump to address from register if zero flag is set"
 		},
 		"43": {
-			"kernel_only": false,
 			"name": "JNZ",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
-					"JUMP"
+					"MACRO.JUMP"
 				]
 			],
 			"notes": "Jump to address from register if zero flag is not set"
 		},
 		"44": {
-			"kernel_only": false,
 			"name": "JC",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
-					"JUMP"
+					"MACRO.JUMP"
 				]
 			],
 			"notes": "Jump to address from register if carry flag is set"
 		},
 		"45": {
-			"kernel_only": false,
 			"name": "JNC",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
-					"JUMP"
+					"MACRO.JUMP"
 				]
 			],
 			"notes": "Jump to address from register if carry flag is not set"
 		},
-		"50": {
+		"46": {
+			"name": "SKIP",
 			"kernel_only": false,
-			"name": "RETI",
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
+				],
+				[
+					"PC.PC_INC",
+					"CU.DONE"
+				]
+			],
+			"notes": "Skip the next instruction, unconditionally"
+		},
+		"50": {
+			"name": "RETI",
+			"kernel_only": false,
+			"steps": [
+				[
+					"MACRO.FETCH"
 				],
 				[
 					"CU.DONE"
@@ -448,11 +478,11 @@
 			"notes": "Return from interrupt"
 		},
 		"51": {
-			"kernel_only": false,
 			"name": "EI",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"CU.DONE"
@@ -461,11 +491,11 @@
 			"notes": "Enable interrupts"
 		},
 		"52": {
-			"kernel_only": false,
 			"name": "DI",
+			"kernel_only": false,
 			"steps": [
 				[
-					"FETCH"
+					"MACRO.FETCH"
 				],
 				[
 					"CU.DONE"
@@ -474,11 +504,12 @@
 			"notes": "Disable interrupts"
 		},
 		"63": {
-			"kernel_only": false,
 			"name": "HALT",
+			"kernel_only": false,
 			"steps": [
 				[
-					"CU.HALT"
+					"CU.HALT",
+					"CU.DONE"
 				]
 			],
 			"notes": "Stop the clock"
